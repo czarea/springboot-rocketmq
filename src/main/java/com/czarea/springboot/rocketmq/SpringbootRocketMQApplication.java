@@ -12,6 +12,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author zhouzx
+ */
 @RestController
 @SpringBootApplication
 public class SpringbootRocketMQApplication {
@@ -28,7 +31,7 @@ public class SpringbootRocketMQApplication {
 
     @RequestMapping("/test")
     public String test(Integer id) {
-        Message msg = new Message(properties.getTopic(),properties.getTag(),("Hello World"+id).getBytes());
+        Message msg = new Message(properties.getTopic(), properties.getTag(), ("Hello World" + id).getBytes());
         try {
             producer.send(msg);
         } catch (MQClientException e) {
