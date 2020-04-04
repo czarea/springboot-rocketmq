@@ -33,10 +33,11 @@ public class RocketConfiguration {
     public DefaultMQPushConsumer consumer1(RocketProperties properties) throws MQClientException {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("test");
         consumer.setConsumeThreadMin(properties.getMinThread());
+        consumer.setInstanceName("test1");
         consumer.setConsumeThreadMax(properties.getMaxThread());
         consumer.setNamesrvAddr(properties.getNameServerAddress());
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
-        consumer.setMessageModel(MessageModel.BROADCASTING);
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+        consumer.setMessageModel(MessageModel.CLUSTERING);
         try {
             consumer.subscribe(properties.getTopic(),properties.getTag());
         } catch (MQClientException e) {
@@ -46,7 +47,7 @@ public class RocketConfiguration {
             msgs.forEach(msg -> {
                 logger.info("consumer1 received " + new String(msg.getBody()));
             });
-            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+            return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         });
 
         consumer.start();
@@ -56,12 +57,14 @@ public class RocketConfiguration {
 
     @Bean
     public DefaultMQPushConsumer consumer2(RocketProperties properties) throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("test2");
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("test");
         consumer.setConsumeThreadMin(properties.getMinThread());
+        consumer.setInstanceName("test2");
         consumer.setConsumeThreadMax(properties.getMaxThread());
         consumer.setNamesrvAddr(properties.getNameServerAddress());
-        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_LAST_OFFSET);
-        consumer.setMessageModel(MessageModel.BROADCASTING);
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+        consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setConsumeMessageBatchMaxSize(10);
         try {
             consumer.subscribe(properties.getTopic(),properties.getTag());
         } catch (MQClientException e) {
@@ -71,7 +74,33 @@ public class RocketConfiguration {
             msgs.forEach(msg -> {
                 logger.info("consumer2 received " + new String(msg.getBody()));
             });
-            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+            return ConsumeConcurrentlyStatus.RECONSUME_LATER;
+        });
+
+        consumer.start();
+        return consumer;
+    }
+
+    @Bean
+    public DefaultMQPushConsumer consumer3(RocketProperties properties) throws MQClientException {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("test");
+        consumer.setInstanceName("test3");
+        consumer.setConsumeThreadMin(properties.getMinThread());
+        consumer.setConsumeThreadMax(properties.getMaxThread());
+        consumer.setNamesrvAddr(properties.getNameServerAddress());
+        consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);
+        consumer.setMessageModel(MessageModel.CLUSTERING);
+        consumer.setConsumeMessageBatchMaxSize(10);
+        try {
+            consumer.subscribe(properties.getTopic(),properties.getTag());
+        } catch (MQClientException e) {
+            e.printStackTrace();
+        }
+        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+            msgs.forEach(msg -> {
+                logger.info("consumer3 received " + new String(msg.getBody()));
+            });
+            return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         });
 
         consumer.start();

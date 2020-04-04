@@ -31,7 +31,7 @@ public class SpringbootRocketMQApplication {
 
     @RequestMapping("/test")
     public String test(Integer id) {
-        Message msg = new Message(properties.getTopic(), properties.getTag(), ("Hello World" + id).getBytes());
+        Message msg = new Message(properties.getTopic(), properties.getTag(), ("controller msg " + id).getBytes());
         try {
             producer.send(msg);
         } catch (MQClientException e) {
