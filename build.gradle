@@ -19,8 +19,9 @@ repositories {
 }
 
 dependencies {
+    implementation 'io.openmessaging:openmessaging-api:0.1.0-alpha'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.apache.rocketmq:rocketmq-client:4.3.0'
+    implementation 'org.apache.rocketmq:rocketmq-client:4.7.0'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

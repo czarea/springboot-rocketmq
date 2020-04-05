@@ -1,6 +1,6 @@
 # springboot + rocketmq
 
-## docker-compose install
+## 1、docker-compose install
 ```
 version: '3.5'
 services:
@@ -10,7 +10,7 @@ services:
     ports:
       - 9876:9876
     volumes:
-      - ./data/logs:/opt/logs
+      - ./data/logs:/home/rocketmq/logs
       - ./data/store:/opt/store
     networks:
         rmq:
@@ -160,9 +160,28 @@ flushDiskType=ASYNC_FLUSH
 # pullMessageThreadPoolNums=128
 ```
 
-## producer
+## 2、producer
+1. 普通消息
+2. 普通顺序消息
+3. 严格顺序消息
+4. 负载均衡
+5. 重试
 
-
-## consumer
+## 3、consumer
 1. pull 
 2. push
+3. cluster & broadcost 两种模式
+4. consume_success & reconsume_later & DLQ死信队列
+5. subscribe tag 和 SQL 匹配
+
+## 4、持久化
+1. mmap(减少用户态和内核态之间的拷贝)
+2. 顺序写
+3. commitlog consumequeue index
+
+## 5、HA
+1. Master & Slave 对commitlog文件 offset的同步
+
+## 6、nameserver(AP)
+1. producer会长链接到每个nameserver，定时30s心跳，同时10s心跳坚持是否正常，超过120s会剔除
+2. consumer只会同其中一个nameserver保存连接，定时30s心跳，
